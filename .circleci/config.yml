@@ -51,14 +51,21 @@ jobs:
 
                 mkdir -p /tmp/s3-chart/stable
 
-                echo "Dependency update and build"
-                find . -maxdepth 1 ! -path /tmp  ! -path . ! -path ./.circleci ! -path ./.git -type d -exec helm dependency update {} \; -exec helm dependency build {} \;
+                echo "Dependency update and build, chart package"
+                for chart in $(find . -maxdepth 1 ! -path /tmp  ! -path . ! -path ./.circleci ! -path ./.git -type d -print)
+                do
+                    helm dependency update $chart
+                    helm dependency build $chart"
 
-                echo "Remove requirements.lock files"
-                find . -maxdepth 3 -name requirements.lock -type f -delete -print
+                    HELM_DEPENDENCY_ERROR=$?
+                    if [ $i == 3 ] && [ $HELM_DEPENDENCY_ERROR != 0 ]; then
+                        echo "ERROR: helm dependency build failed at the final iteration, please check the above logs."
+                        exit 1
+                    fi
 
-                echo "Create helm packages"
-                find . -maxdepth 1 ! -path /tmp  ! -path . ! -path ./.circleci ! -path ./.git -type d -print -exec helm package -d /tmp/s3-chart/stable {} \;
+                    rm -f $chart/requirements.lock
+                    helm package -d /tmp/s3-chart/stable $chart
+                done
 
                 helm repo index --url $BANZAICLOUD_STABLE_REPO /tmp/s3-chart/stable
 
@@ -86,14 +93,21 @@ jobs:
 
                 mkdir -p /tmp/s3-chart/incubator
 
-                echo "Dependency update and build"
-                find . -maxdepth 1 ! -path /tmp  ! -path . ! -path ./.circleci ! -path ./.git -type d -print -exec helm dependency update {} \; -exec helm dependency build {} \;
+                echo "Dependency update and build, chart package"
+                for chart in $(find . -maxdepth 1 ! -path /tmp  ! -path . ! -path ./.circleci ! -path ./.git -type d -print)
+                do
+                    helm dependency update $chart
+                    helm dependency build $chart"
 
-                echo "Remove requirements.lock files"
-                find . -maxdepth 3 -name requirements.lock -type f -delete -print
+                    HELM_DEPENDENCY_ERROR=$?
+                    if [ $i == 3 ] && [ $HELM_DEPENDENCY_ERROR != 0 ]; then
+                        echo "ERROR: helm dependency build failed at the final iteration, please check the above logs."
+                        exit 1
+                    fi
 
-                echo "Create helm packages"
-                find . -maxdepth 1 ! -path /tmp  ! -path . ! -path ./.circleci ! -path ./.git -type d -print -exec helm package -d /tmp/s3-chart/incubator {} \;
+                    rm -f $chart/requirements.lock
+                    helm package -d /tmp/s3-chart/stable $chart
+                done
 
                 helm repo index --url $BANZAICLOUD_INCUBATOR_REPO /tmp/s3-chart/incubator
 
