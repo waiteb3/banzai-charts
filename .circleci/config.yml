@@ -52,9 +52,12 @@ jobs:
                 mkdir -p /tmp/s3-chart/stable
 
                 echo "Dependency update and build"
-                # At the last iteration of the build, we can't get any errors slip through
                 if [ $i == 3 ]; then
+                    echo "At the last iteration of the build, we can't get any errors slip through"
                     find . -maxdepth 1 ! -path /tmp  ! -path . ! -path ./.circleci ! -path ./.git -type d -print0 | xargs -0 -I % sh -c "helm dependency update % && helm dependency build %"
+                    if [ $? != 0 ]; then
+                        exit 1
+                    fi
                 else
                     find . -maxdepth 1 ! -path /tmp  ! -path . ! -path ./.circleci ! -path ./.git -type d -exec helm dependency update {} \; -exec helm dependency build {} \;
                 fi
@@ -92,9 +95,12 @@ jobs:
                 mkdir -p /tmp/s3-chart/incubator
 
                 echo "Dependency update and build"
-                # At the last iteration of the build, we can't get any errors slip through
                 if [ $i == 3 ]; then
+                    echo "At the last iteration of the build, we can't get any errors slip through"
                     find . -maxdepth 1 ! -path /tmp  ! -path . ! -path ./.circleci ! -path ./.git -type d -print0 | xargs -0 -I % sh -c "helm dependency update % && helm dependency build %"
+                    if [ $? != 0 ]; then
+                        exit 1
+                    fi
                 else
                     find . -maxdepth 1 ! -path /tmp  ! -path . ! -path ./.circleci ! -path ./.git -type d -exec helm dependency update {} \; -exec helm dependency build {} \;
                 fi
