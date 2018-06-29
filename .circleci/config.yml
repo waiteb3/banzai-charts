@@ -55,7 +55,7 @@ jobs:
                 for chart in $(find . -maxdepth 1 ! -path /tmp  ! -path . ! -path ./.circleci ! -path ./.git -type d -print)
                 do
                     helm dependency update $chart
-                    helm dependency build $chart"
+                    helm dependency build $chart
 
                     HELM_DEPENDENCY_ERROR=$?
                     if [ $i == 3 ] && [ $HELM_DEPENDENCY_ERROR != 0 ]; then
@@ -97,7 +97,7 @@ jobs:
                 for chart in $(find . -maxdepth 1 ! -path /tmp  ! -path . ! -path ./.circleci ! -path ./.git -type d -print)
                 do
                     helm dependency update $chart
-                    helm dependency build $chart"
+                    helm dependency build $chart
 
                     HELM_DEPENDENCY_ERROR=$?
                     if [ $i == 3 ] && [ $HELM_DEPENDENCY_ERROR != 0 ]; then
