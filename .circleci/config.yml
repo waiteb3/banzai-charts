@@ -68,8 +68,12 @@ jobs:
                 if [ "$GIT_TAG" = "0.3.0" ]; then
                     s3cmd sync /tmp/s3-chart/stable/* s3://kubernetes-charts.banzaicloud.com/
                 elif [ "$GIT_TAG" = "" ]; then
+                    s3cmd sync s3://kubernetes-charts.banzaicloud.com/branch/master/ /tmp/s3-chart/stable/
+                    helm repo index --url $BANZAICLOUD_STABLE_REPO /tmp/s3-chart/stable
                     s3cmd sync /tmp/s3-chart/stable/* s3://kubernetes-charts.banzaicloud.com/branch/${GIT_BRANCH}/
                 elif [ "$GIT_TAG" != "" ]; then
+                    s3cmd sync s3://kubernetes-charts.banzaicloud.com/branch/master/ /tmp/s3-chart/stable/
+                    helm repo index --url $BANZAICLOUD_STABLE_REPO /tmp/s3-chart/stable
                     s3cmd sync /tmp/s3-chart/stable/* s3://kubernetes-charts.banzaicloud.com/release/${GIT_TAG}/
                 fi
             done
